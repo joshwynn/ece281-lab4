@@ -141,9 +141,12 @@ architecture top_basys3_arch of top_basys3 is
     signal w_sel : std_logic_vector(3 downto 0);
     signal w_D3, w_D2, w_D1, w_D0, f_data  : std_logic_vector (k_IO_WIDTH - 1 downto 0);
     signal f_sel_n : std_logic_vector (3 downto 0);
+    signal w_reset1, w_reset2 : std_logic := '0';
   
 begin
 	-- PORT MAPS ----------------------------------------
+    w_reset1 <= btnL or btnU;
+    w_reset2 <= btnR or btnL;
     sevenSegDecoder_inst: sevenSegDecoder
        port map(
            i_D => w_data(3 downto 0),
@@ -153,20 +156,20 @@ begin
        generic map ( k_DIV => 50000000 ) -- 1 Hz clock from 100 MHz
        port map (                          
            i_clk   => clk,
-           i_reset => btnL or btnU,
+           i_reset => w_reset1,
            o_clk   => w_clk
        ); 
     clkdiv2_inst : clock_divider 		--instantiation of clock_divider to take 
        generic map ( k_DIV => 250000 ) -- 1 Hz clock from 100 MHz
        port map (                          
             i_clk   => clk,
-            i_reset => btnL or btnU,
+            i_reset => w_reset1,
             o_clk   => w_clk2
        ); 
 	elevator_controller_fsm_inst : elevator_controller_fsm
 	   port map (
             i_clk     => w_clk,
-            i_reset   => btnR or btnL,
+            i_reset   => w_reset2,
             i_stop    => sw(0),
             i_up_down => sw(1),
             o_floor   => w_floor
@@ -176,7 +179,7 @@ begin
        generic map ( k_WIDTH =>  4)
        port map ( 
            i_clk   => w_clk2,
-           i_reset => btnR or btnL,
+           i_reset => w_reset2,
            i_D3(3 downto 1)    => (others => '0'),
            i_D3(0) => w_floor(4),
            i_D2    => w_floor (3 downto 0),
