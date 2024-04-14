@@ -153,7 +153,7 @@ begin
            o_S => seg
        );
 	clkdiv_inst : clock_divider 		--instantiation of clock_divider to take 
-       generic map ( k_DIV => 50000000 ) -- 1 Hz clock from 100 MHz
+       generic map ( k_DIV => 25000000 ) -- 1 Hz clock from 100 MHz
        port map (                          
            i_clk   => clk,
            i_reset => w_reset1,
